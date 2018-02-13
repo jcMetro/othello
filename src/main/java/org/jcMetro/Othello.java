@@ -1,5 +1,7 @@
 package org.jcMetro;
 
+import java.util.Arrays;
+
 public class Othello {
 
     private final char[][] cells ;
@@ -7,10 +9,8 @@ public class Othello {
     public Othello() {
         this.cells = new char[8][8];
 
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                this.cells[i][j] = '-';
-            }
+        for (char[] row: cells){
+            Arrays.fill(row, '-');
         }
 
         this.cells[3][3] = 'O';
