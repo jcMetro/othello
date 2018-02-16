@@ -3,7 +3,11 @@ package org.jcMetro;
 public enum Player {
     X, O;
 
-    public char symbol(){
-        return this.name().charAt(0);
+    public Player opposite(){
+        return this == X  ? O : X;
+    }
+
+    public CellStatus cellStatus(){
+        return CellStatus.valueOf(this.name());
     }
 }

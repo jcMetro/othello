@@ -11,14 +11,25 @@ public class OthelloTest {
     public void initial_state() {
         Othello othello = new Othello();
 
-        assertThat(othello.displayBoard(), is(initialState()));
+        assertThat(othello.displayBoard(), is(String.join("\n",
+                "1 --------",
+                "2 --------",
+                "3 --------",
+                "4 ---OX---",
+                "5 ---XO---",
+                "6 --------",
+                "7 --------",
+                "8 --------",
+                "  abcdefgh")));
+
+        assertThat(othello.currentPlayer(), is(Player.X));
     }
 
     @Test
     public void first_move() {
         Othello othello = new Othello();
 
-        othello.placeMove(Player.X, "d3");
+        othello.placeMove("d3");
 
         assertThat(othello.displayBoard(), is(String.join("\n",
                 "1 --------",
@@ -30,19 +41,9 @@ public class OthelloTest {
                 "7 --------",
                 "8 --------",
                 "  abcdefgh")));
+
+        assertThat(othello.currentPlayer(), is(Player.O));
     }
 
 
-    private String initialState() {
-        return String.join("\n",
-                "1 --------",
-                "2 --------",
-                "3 --------",
-                "4 ---OX---",
-                "5 ---XO---",
-                "6 --------",
-                "7 --------",
-                "8 --------",
-                "  abcdefgh");
-    }
 }

@@ -2,115 +2,94 @@ package org.jcMetro;
 
 import java.util.*;
 
-import static org.jcMetro.Player.O;
-import static org.jcMetro.Player.X;
+import static org.jcMetro.Cell.cell;
+import static org.jcMetro.CellStatus.Empty;
 
 public class Othello {
 
-    private enum Direction{
-        North(-1, 0),
-        South(1,0);
+    public static final int BOARD_SIZE = 8;
 
-        public final int rowStep;
-        public final int colStep;
-
-        Direction(int rowStep, int colStep) {
-            this.rowStep = rowStep;
-            this.colStep = colStep;
-        }
-    }
-
-    public class Cell{
-
-        public final int rowIndex;
-        public final int colIndex;
-
-        public Cell(int rowIndex, int colIndex) {
-            this.rowIndex = rowIndex;
-            this.colIndex = colIndex;
-        }
-
-        public Cell moveTo(Direction direction) {
-            return new Cell(rowIndex + direction.rowStep, colIndex + direction.colStep);
-        }
-
-        @Override
-        public String toString() {
-            return "Cell{" +
-                    "rowIndex=" + rowIndex +
-                    ", colIndex=" + colIndex +
-                    '}';
-        }
-    }
-
-
-    public static final int N = 8;
-
-    private final char[][] cells ;
+    private final Map<Cell, CellStatus> board = new HashMap<>();
+    private Player currentPlayer = Player.X;
 
     public Othello() {
-        cells = new char[N][N];
 
-        for (char[] row: cells){
-            Arrays.fill(row, '-');
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                board.put(cell(i, j), Empty);
+            }
         }
 
-        placeMove(O, "d4");
-        placeMove(X, "e4");
-        placeMove(X, "d5");
-        placeMove(O, "e5");
+        board.put(cell(3,3), Player.O.cellStatus());
+        board.put(cell(3,4), Player.X.cellStatus());
+        board.put(cell(4,3), Player.X.cellStatus());
+        board.put(cell(4,4), Player.O.cellStatus());
+
+        currentPlayer = Player.X;
     }
 
-    public void placeMove(Player player, String coordinate){
+    public void placeMove(String coordinate){
 
         int colIndex = coordinate.charAt(0) - 'a';
         int rowIndex = coordinate.charAt(1) - '1';
 
-        cells[rowIndex][colIndex] = player.symbol();
+        board.put(cell(rowIndex, colIndex), currentPlayer.cellStatus());
 
-        // detect any flipping required
-        Cell currentCell = new Cell(rowIndex, colIndex);
-        Player currentPlayer = Player.valueOf(String.valueOf(cells[currentCell.rowIndex][currentCell.colIndex]));
-        Player oppositePlayer = currentPlayer == Player.O ? Player.X : Player.O;
+        Cell currentCell = cell(rowIndex, colIndex);
 
         Set<Cell> cellsToFlip = new HashSet<>();
 
         for (Direction direction : Direction.values()) {
             Cell searchCell = currentCell.moveTo(direction);
             Set<Cell> potentialFlips = new HashSet<>();
-            boolean continueSearch = isWithinBoard(searchCell) && cells[searchCell.rowIndex][searchCell.colIndex] == oppositePlayer.symbol();
 
-            while(continueSearch){
+            while(continueSearch(currentPlayer.opposite(), searchCell)){
                 potentialFlips.add(searchCell);
                 searchCell = searchCell.moveTo(direction);
-                continueSearch = isWithinBoard(searchCell) && cells[searchCell.rowIndex][searchCell.colIndex] == oppositePlayer.symbol();
             }
 
-            if (cells[searchCell.rowIndex][searchCell.colIndex] == currentPlayer.symbol()){
+            if (board.get(searchCell) == currentPlayer.cellStatus()){
                 cellsToFlip.addAll(potentialFlips);
             }
         }
 
         for (Cell cell : cellsToFlip) {
-            cells[cell.rowIndex][cell.colIndex] = currentPlayer.symbol();
+            board.put(cell, currentPlayer.cellStatus());
         }
+
+        toggleCurrentPlayer();
+    }
+
+    private void toggleCurrentPlayer() {
+        currentPlayer = currentPlayer.opposite();
+    }
+
+    private boolean continueSearch(Player oppositePlayer, Cell searchCell) {
+        return isWithinBoard(searchCell) &&
+                board.get(searchCell) == oppositePlayer.cellStatus();
     }
 
     private boolean isWithinBoard(Cell searchCell) {
-        return searchCell.rowIndex < N && searchCell.colIndex < N ;
+        return searchCell.rowIndex < BOARD_SIZE && searchCell.colIndex < BOARD_SIZE;
     }
 
     public String displayBoard() {
 
         String result = "";
-        for (int i = 0; i < N; i++) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
             result += (i+1);
             result += " ";
-            result += String.valueOf(this.cells[i]);
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                result += board.get(cell(i,j)).displayValue();
+            }
             result += '\n';
         }
 
         result += "  abcdefgh";
         return result;
+    }
+
+    public Player currentPlayer() {
+        return currentPlayer;
     }
 }
