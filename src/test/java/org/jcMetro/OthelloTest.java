@@ -1,6 +1,10 @@
 package org.jcMetro;
 
+import com.google.common.collect.Sets;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
@@ -23,6 +27,7 @@ public class OthelloTest {
                 "  abcdefgh")));
 
         assertThat(othello.currentPlayer(), is(Player.X));
+        assertThat(othello.availableMoves(), is(Sets.newHashSet("d3", "c4", "f5", "e6")));
     }
 
     @Test

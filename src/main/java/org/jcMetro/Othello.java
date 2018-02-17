@@ -94,4 +94,32 @@ public class Othello {
     public Player currentPlayer() {
         return currentPlayer;
     }
+
+    public Set<String> availableMoves() {
+//        board.entrySet().stream().filter(
+//                entry -> {
+//                    CellStatus cellStatus = entry.getValue();
+//                    if (cellStatus != CellStatus.Empty)
+//                        return false;
+//
+//                });
+        return null;
+    }
+//
+//    private Set<Cell> cellToFlips(Cell cell) {
+//
+//        for (Direction direction : Direction.values()) {
+//            Cell searchCell = cell.moveTo(direction);
+//            Set<Cell> potentialFlips = new HashSet<>();
+//
+//            while(continueSearch(currentPlayer.opposite(), searchCell)){
+//                potentialFlips.add(searchCell);
+//                searchCell = searchCell.moveTo(direction);
+//            }
+//
+//            if (board.get(searchCell) == currentPlayer.cellStatus()){
+//                cellsToFlip.addAll(potentialFlips);
+//            }
+//        }
+//    }
 }
