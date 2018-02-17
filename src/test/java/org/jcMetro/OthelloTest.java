@@ -45,5 +45,26 @@ public class OthelloTest {
         assertThat(othello.currentPlayer(), is(Player.O));
     }
 
+    @Test
+    public void second_move() {
+        Othello othello = new Othello();
+
+        othello.placeMove("d3");
+        othello.placeMove("c5");
+
+        assertThat(othello.displayBoard(), is(String.join("\n",
+                "1 --------",
+                "2 --------",
+                "3 ---X----",
+                "4 ---XX---",
+                "5 --OOO---",
+                "6 --------",
+                "7 --------",
+                "8 --------",
+                "  abcdefgh")));
+
+        assertThat(othello.currentPlayer(), is(Player.X));
+    }
+
 
 }

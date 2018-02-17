@@ -28,14 +28,16 @@ public class Othello {
         currentPlayer = Player.X;
     }
 
-    public void placeMove(String coordinate){
+    public void placeMove(String input){
+        Coordinate coordinate = new Coordinate(input);
 
-        int colIndex = coordinate.charAt(0) - 'a';
-        int rowIndex = coordinate.charAt(1) - '1';
+        if (!coordinate.isValid()){
+            throw new IllegalArgumentException("Invalid coordinate input: " + coordinate);
+        }
 
-        board.put(cell(rowIndex, colIndex), currentPlayer.cellStatus());
+        board.put(cell(coordinate), currentPlayer.cellStatus());
 
-        Cell currentCell = cell(rowIndex, colIndex);
+        Cell currentCell = cell(coordinate);
 
         Set<Cell> cellsToFlip = new HashSet<>();
 

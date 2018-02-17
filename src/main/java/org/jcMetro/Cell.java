@@ -11,6 +11,10 @@ public class Cell {
         return new Cell(rowIndex, colIndex);
     }
 
+    public static Cell cell(Coordinate coordinate){
+        return new Cell(coordinate.rowIndex(), coordinate.colIndex());
+    }
+
     private Cell(int rowIndex, int colIndex) {
         this.rowIndex = rowIndex;
         this.colIndex = colIndex;
