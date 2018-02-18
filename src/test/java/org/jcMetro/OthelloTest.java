@@ -27,7 +27,7 @@ public class OthelloTest {
                 "  abcdefgh")));
 
         assertThat(othello.currentPlayer(), is(Player.X));
-        assertThat(othello.availableMoves(), is(Sets.newHashSet("d3", "c4", "f5", "e6")));
+        assertThat(othello.displayValidMoves(), is(Sets.newHashSet("d3", "c4", "f5", "e6")));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class OthelloTest {
                 "  abcdefgh")));
 
         assertThat(othello.currentPlayer(), is(Player.O));
-        assertThat(othello.availableMoves(), is(Sets.newHashSet("c3", "c5", "e3")));
+        assertThat(othello.displayValidMoves(), is(Sets.newHashSet("c3", "c5", "e3")));
     }
 
     @Test
@@ -70,7 +70,7 @@ public class OthelloTest {
                 "  abcdefgh")));
 
         assertThat(othello.currentPlayer(), is(Player.X));
-        assertThat(othello.availableMoves(), is(Sets.newHashSet("b6", "c6", "d6", "e6", "f6")));
+        assertThat(othello.displayValidMoves(), is(Sets.newHashSet("b6", "c6", "d6", "e6", "f6")));
     }
 
 

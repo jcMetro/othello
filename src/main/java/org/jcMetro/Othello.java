@@ -1,5 +1,7 @@
 package org.jcMetro;
 
+import com.google.common.collect.Maps;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -11,6 +13,8 @@ public class Othello {
     public static final int BOARD_SIZE = 8;
 
     private final Map<Cell, CellStatus> board = new HashMap<>();
+    private Map<Cell, Set<Cell>> validMoves = new HashMap<>();
+
     private Player currentPlayer = Player.X;
 
     public Othello() {
@@ -27,6 +31,7 @@ public class Othello {
         board.put(cell(4, 4), Player.O.cellStatus());
 
         currentPlayer = Player.X;
+        calculateValidMoves();
     }
 
     public void placeMove(String input) {
@@ -36,31 +41,16 @@ public class Othello {
             throw new IllegalArgumentException("Invalid coordinate input: " + coordinate);
         }
 
-        board.put(cell(coordinate), currentPlayer.cellStatus());
-
         Cell currentCell = cell(coordinate);
 
-        Set<Cell> cellsToFlip = new HashSet<>();
+        board.put(currentCell, currentPlayer.cellStatus());
 
-        for (Direction direction : Direction.values()) {
-            Cell searchCell = currentCell.moveTo(direction);
-            Set<Cell> potentialFlips = new HashSet<>();
-
-            while (continueSearch(currentPlayer.opposite(), searchCell)) {
-                potentialFlips.add(searchCell);
-                searchCell = searchCell.moveTo(direction);
-            }
-
-            if (board.get(searchCell) == currentPlayer.cellStatus()) {
-                cellsToFlip.addAll(potentialFlips);
-            }
-        }
-
-        for (Cell cell : cellsToFlip) {
+        for (Cell cell : validMoves.get(currentCell)) {
             board.put(cell, currentPlayer.cellStatus());
         }
 
         toggleCurrentPlayer();
+        calculateValidMoves();
     }
 
     private void toggleCurrentPlayer() {
@@ -74,6 +64,10 @@ public class Othello {
 
     private boolean isWithinBoard(Cell searchCell) {
         return searchCell.rowIndex < BOARD_SIZE && searchCell.colIndex < BOARD_SIZE;
+    }
+
+    public Player currentPlayer() {
+        return currentPlayer;
     }
 
     public String displayBoard() {
@@ -92,23 +86,16 @@ public class Othello {
         return result;
     }
 
-    public Player currentPlayer() {
-        return currentPlayer;
+    public void calculateValidMoves() {
+        validMoves = board.entrySet().stream()
+                .filter(entry -> entry.getValue() == CellStatus.Empty)
+                .map(entry -> Maps.immutableEntry(entry.getKey(), cellToFlips(entry.getKey())))
+                .filter(entry -> !entry.getValue().isEmpty())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public Set<String> availableMoves() {
-        return board.entrySet().stream()
-                .filter(
-                        entry -> {
-                            CellStatus cellStatus = entry.getValue();
-                            if (cellStatus != CellStatus.Empty)
-                                return false;
-
-                            return !cellToFlips(entry.getKey()).isEmpty();
-                        })
-                .map(entry -> entry.getKey())
-                .map(Cell::displayCoordinate)
-                .collect(Collectors.toSet());
+    public Set<String> displayValidMoves(){
+        return validMoves.keySet().stream().map(cell -> cell.displayCoordinate()).collect(Collectors.toSet());
     }
 
     private Set<Cell> cellToFlips(Cell cell) {
