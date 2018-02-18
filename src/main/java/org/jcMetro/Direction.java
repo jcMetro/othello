@@ -2,7 +2,7 @@ package org.jcMetro;
 
 public enum Direction {
     North(-1, 0),
-    NorthEast(-1,-1),
+    NorthEast(-1,1),
     East(0,1),
     SouthEast(1,1),
     South(1, 0),

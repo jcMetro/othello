@@ -1,6 +1,7 @@
 package org.jcMetro;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.jcMetro.Cell.cell;
 import static org.jcMetro.CellStatus.Empty;
@@ -20,18 +21,18 @@ public class Othello {
             }
         }
 
-        board.put(cell(3,3), Player.O.cellStatus());
-        board.put(cell(3,4), Player.X.cellStatus());
-        board.put(cell(4,3), Player.X.cellStatus());
-        board.put(cell(4,4), Player.O.cellStatus());
+        board.put(cell(3, 3), Player.O.cellStatus());
+        board.put(cell(3, 4), Player.X.cellStatus());
+        board.put(cell(4, 3), Player.X.cellStatus());
+        board.put(cell(4, 4), Player.O.cellStatus());
 
         currentPlayer = Player.X;
     }
 
-    public void placeMove(String input){
+    public void placeMove(String input) {
         Coordinate coordinate = new Coordinate(input);
 
-        if (!coordinate.isValid()){
+        if (!coordinate.isValid()) {
             throw new IllegalArgumentException("Invalid coordinate input: " + coordinate);
         }
 
@@ -45,12 +46,12 @@ public class Othello {
             Cell searchCell = currentCell.moveTo(direction);
             Set<Cell> potentialFlips = new HashSet<>();
 
-            while(continueSearch(currentPlayer.opposite(), searchCell)){
+            while (continueSearch(currentPlayer.opposite(), searchCell)) {
                 potentialFlips.add(searchCell);
                 searchCell = searchCell.moveTo(direction);
             }
 
-            if (board.get(searchCell) == currentPlayer.cellStatus()){
+            if (board.get(searchCell) == currentPlayer.cellStatus()) {
                 cellsToFlip.addAll(potentialFlips);
             }
         }
@@ -79,10 +80,10 @@ public class Othello {
 
         String result = "";
         for (int i = 0; i < BOARD_SIZE; i++) {
-            result += (i+1);
+            result += (i + 1);
             result += " ";
             for (int j = 0; j < BOARD_SIZE; j++) {
-                result += board.get(cell(i,j)).displayValue();
+                result += board.get(cell(i, j)).displayValue();
             }
             result += '\n';
         }
@@ -96,30 +97,36 @@ public class Othello {
     }
 
     public Set<String> availableMoves() {
-//        board.entrySet().stream().filter(
-//                entry -> {
-//                    CellStatus cellStatus = entry.getValue();
-//                    if (cellStatus != CellStatus.Empty)
-//                        return false;
-//
-//                });
-        return null;
+        return board.entrySet().stream()
+                .filter(
+                        entry -> {
+                            CellStatus cellStatus = entry.getValue();
+                            if (cellStatus != CellStatus.Empty)
+                                return false;
+
+                            return !cellToFlips(entry.getKey()).isEmpty();
+                        })
+                .map(entry -> entry.getKey())
+                .map(Cell::displayCoordinate)
+                .collect(Collectors.toSet());
     }
-//
-//    private Set<Cell> cellToFlips(Cell cell) {
-//
-//        for (Direction direction : Direction.values()) {
-//            Cell searchCell = cell.moveTo(direction);
-//            Set<Cell> potentialFlips = new HashSet<>();
-//
-//            while(continueSearch(currentPlayer.opposite(), searchCell)){
-//                potentialFlips.add(searchCell);
-//                searchCell = searchCell.moveTo(direction);
-//            }
-//
-//            if (board.get(searchCell) == currentPlayer.cellStatus()){
-//                cellsToFlip.addAll(potentialFlips);
-//            }
-//        }
-//    }
+
+    private Set<Cell> cellToFlips(Cell cell) {
+
+        Set<Cell> allCellToFlip = new HashSet<>();
+        for (Direction direction : Direction.values()) {
+            Cell searchCell = cell.moveTo(direction);
+            Set<Cell> potentialFlips = new HashSet<>();
+
+            while (continueSearch(currentPlayer.opposite(), searchCell)) {
+                potentialFlips.add(searchCell);
+                searchCell = searchCell.moveTo(direction);
+            }
+
+            if (board.get(searchCell) == currentPlayer.cellStatus()) {
+                allCellToFlip.addAll(potentialFlips);
+            }
+        }
+        return allCellToFlip;
+    }
 }

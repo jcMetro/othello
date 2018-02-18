@@ -26,10 +26,7 @@ public class Cell {
 
     @Override
     public String toString() {
-        return "Cell{" +
-                "rowIndex=" + rowIndex +
-                ", colIndex=" + colIndex +
-                '}';
+        return "Cell(" + displayCoordinate() + ")";
     }
 
     @Override
@@ -44,5 +41,9 @@ public class Cell {
     @Override
     public int hashCode() {
         return Objects.hash(rowIndex, colIndex);
+    }
+
+    public String displayCoordinate() {
+        return "" + (char)(colIndex + 'a') + (char)(rowIndex + '1');
     }
 }
