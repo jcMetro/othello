@@ -1,7 +1,5 @@
 package org.jcMetro;
 
-import sun.security.tools.keytool.Main;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,10 +53,10 @@ public class Othello {
             board.put(cell, currentPlayer.cellStatus());
         }
 
-        toggleCurrentPlayer();
+        updateCurrentPlayer();
     }
 
-    private void toggleCurrentPlayer() {
+    private void updateCurrentPlayer() {
         currentPlayer = currentPlayer.opposite();
         calculateValidMoves();
 
@@ -110,7 +108,6 @@ public class Othello {
     }
 
     public void calculateValidMoves() {
-
         validMoves = board.entrySet().stream()
                 .filter(entry -> entry.getValue() == CellStatus.Empty)
                 .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), cellToFlips(entry.getKey())))
