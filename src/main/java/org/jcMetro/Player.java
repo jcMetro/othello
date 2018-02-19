@@ -3,7 +3,7 @@ package org.jcMetro;
 public enum Player {
     X, O;
 
-    public Player opposite(){
+    public Player opponent(){
         return this == X  ? O : X;
     }
 

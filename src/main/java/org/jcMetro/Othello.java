@@ -57,11 +57,11 @@ public class Othello {
     }
 
     private void updateCurrentPlayer() {
-        currentPlayer = currentPlayer.opposite();
+        currentPlayer = currentPlayer.opponent();
         calculateValidMoves();
 
         if (validMoves.isEmpty()) {
-            currentPlayer = currentPlayer.opposite();
+            currentPlayer = currentPlayer.opponent();
             calculateValidMoves();
             if (validMoves.isEmpty()) {
                 endGame = true;
@@ -70,9 +70,12 @@ public class Othello {
         }
     }
 
-    private boolean continueSearch(Player oppositePlayer, Cell searchCell) {
-        return isWithinBoard(searchCell) &&
-                board.get(searchCell) == oppositePlayer.cellStatus();
+    private boolean continueSearch(Player player, Cell searchCell) {
+        return isWithinBoard(searchCell) && isOpponentCell(searchCell, player);
+    }
+
+    private boolean isOpponentCell(Cell cell, Player player) {
+        return board.get(cell) == player.opponent().cellStatus();
     }
 
     private boolean isWithinBoard(Cell searchCell) {
@@ -110,32 +113,35 @@ public class Othello {
     public void calculateValidMoves() {
         validMoves = board.entrySet().stream()
                 .filter(entry -> entry.getValue() == CellStatus.Empty)
-                .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), cellToFlips(entry.getKey())))
+                .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), cellsToFlip(entry.getKey())))
                 .filter(entry -> !entry.getValue().isEmpty())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public Set<String> displayValidMoves() {
-        return validMoves.keySet().stream().map(cell -> cell.displayCoordinate()).collect(Collectors.toSet());
+        return validMoves.keySet()
+                .stream()
+                .map(cell -> cell.displayCoordinate())
+                .collect(Collectors.toSet());
     }
 
-    private Set<Cell> cellToFlips(Cell cell) {
+    private Set<Cell> cellsToFlip(Cell cell) {
 
-        Set<Cell> allCellToFlip = new HashSet<>();
+        Set<Cell> allCellsToFlip = new HashSet<>();
         for (Direction direction : Direction.values()) {
             Cell searchCell = cell.moveTo(direction);
             Set<Cell> potentialFlips = new HashSet<>();
 
-            while (continueSearch(currentPlayer.opposite(), searchCell)) {
+            while (continueSearch(currentPlayer, searchCell)) {
                 potentialFlips.add(searchCell);
                 searchCell = searchCell.moveTo(direction);
             }
 
             if (board.get(searchCell) == currentPlayer.cellStatus()) {
-                allCellToFlip.addAll(potentialFlips);
+                allCellsToFlip.addAll(potentialFlips);
             }
         }
-        return allCellToFlip;
+        return allCellsToFlip;
     }
 
     public boolean isEndGame() {
