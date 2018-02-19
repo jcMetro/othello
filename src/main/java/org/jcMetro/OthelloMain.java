@@ -21,13 +21,6 @@ public class OthelloMain {
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-        testMoves(othello,
-                "e6", "d6", "c7", "d7", "c8", "b8", "a8", "d8", "e8", "f7",
-                "e7", "f8", "g8", "g7", "h6", "h7", "h8", "e3", "e2", "f2",
-                "g2", "e1", "d2", "g1", "b7", "a7", "a6", "f6", "g6", "c2",
-                "b2", "c1", "c6", "c5", "d3", "a2", "b6", "c3", "a1", "b3",
-                "a3", "b4", "b1");
-
         while(!othello.isEndGame()){
             System.out.println(othello.displayBoard());
             System.out.println("current player is: " + othello.currentPlayer());
@@ -35,7 +28,6 @@ public class OthelloMain {
             String move = readMoveInput(othello, in);
 
             othello.placeMove(move);
-            System.out.println(othello.getMoveHistory());
         }
 
         System.out.println("Game ended, final board is: ");
@@ -45,7 +37,7 @@ public class OthelloMain {
         System.out.println("Score for Player O: " + othello.score(Player.O));
 
         if (othello.winner().isPresent()) {
-            System.out.println("Winner is: " + othello.winner());
+            System.out.println("Winner is Player " + othello.winner().get());
         }
         else{
             System.out.println("Game tie. No winner");
@@ -64,12 +56,5 @@ public class OthelloMain {
             }
         }
         while(true);
-    }
-
-
-    private static void testMoves(Othello othello, String... coordinates) {
-        for (String coordinate : coordinates) {
-            othello.placeMove(coordinate);
-        }
     }
 }
