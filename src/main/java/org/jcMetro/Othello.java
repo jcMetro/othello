@@ -1,6 +1,6 @@
 package org.jcMetro;
 
-import com.google.common.collect.Maps;
+import sun.security.tools.keytool.Main;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,7 +15,9 @@ public class Othello {
     private final Map<Cell, CellStatus> board = new HashMap<>();
     private Map<Cell, Set<Cell>> validMoves = new HashMap<>();
 
-    private Player currentPlayer = Player.X;
+    private Player currentPlayer;
+    private boolean endGame;
+    private List<String> moveHistory = new ArrayList<>();
 
     public Othello() {
 
@@ -30,17 +32,21 @@ public class Othello {
         board.put(cell(4, 3), Player.X.cellStatus());
         board.put(cell(4, 4), Player.O.cellStatus());
 
+        endGame = false;
         currentPlayer = Player.X;
         calculateValidMoves();
     }
 
-    public void placeMove(String input) {
+    public boolean isValidMove(String input) {
         Coordinate coordinate = new Coordinate(input);
+        return coordinate.isValid() && validMoves.containsKey(cell(coordinate));
+    }
 
-        if (!coordinate.isValid()) {
-            throw new IllegalArgumentException("Invalid coordinate input: " + coordinate);
-        }
+    public void placeMove(String input) {
 
+        moveHistory.add(input);
+
+        Coordinate coordinate = new Coordinate(input);
         Cell currentCell = cell(coordinate);
 
         board.put(currentCell, currentPlayer.cellStatus());
@@ -50,11 +56,20 @@ public class Othello {
         }
 
         toggleCurrentPlayer();
-        calculateValidMoves();
     }
 
     private void toggleCurrentPlayer() {
         currentPlayer = currentPlayer.opposite();
+        calculateValidMoves();
+
+        if (validMoves.isEmpty()) {
+            currentPlayer = currentPlayer.opposite();
+            calculateValidMoves();
+            if (validMoves.isEmpty()) {
+                endGame = true;
+                currentPlayer = null;
+            }
+        }
     }
 
     private boolean continueSearch(Player oppositePlayer, Cell searchCell) {
@@ -77,7 +92,7 @@ public class Othello {
             result += (i + 1);
             result += " ";
             for (int j = 0; j < BOARD_SIZE; j++) {
-                result += board.get(cell(i, j)).displayValue();
+                result += displayCell(i, j);
             }
             result += '\n';
         }
@@ -86,15 +101,24 @@ public class Othello {
         return result;
     }
 
+    private String displayCell(int i, int j) {
+        Cell cell = cell(i, j);
+        if (validMoves.containsKey(cell)) {
+            return "*";
+        }
+        return board.get(cell).displayValue();
+    }
+
     public void calculateValidMoves() {
+
         validMoves = board.entrySet().stream()
                 .filter(entry -> entry.getValue() == CellStatus.Empty)
-                .map(entry -> Maps.immutableEntry(entry.getKey(), cellToFlips(entry.getKey())))
+                .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), cellToFlips(entry.getKey())))
                 .filter(entry -> !entry.getValue().isEmpty())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public Set<String> displayValidMoves(){
+    public Set<String> displayValidMoves() {
         return validMoves.keySet().stream().map(cell -> cell.displayCoordinate()).collect(Collectors.toSet());
     }
 
@@ -115,5 +139,34 @@ public class Othello {
             }
         }
         return allCellToFlip;
+    }
+
+    public boolean isEndGame() {
+        return endGame;
+    }
+
+    public List<String> getMoveHistory() {
+        return moveHistory;
+    }
+
+    public Optional<Player> winner() {
+        long playerXCount = score(Player.X);
+        long playerOCount = score(Player.O);
+
+        if (playerXCount > playerOCount){
+            return Optional.of(Player.X);
+        }
+        else if (playerOCount > playerXCount){
+            return Optional.of(Player.O);
+        }
+        else {
+            return Optional.empty(); // tie is possible
+        }
+    }
+
+     public int score(Player player) {
+        return Math.toIntExact(board.entrySet().stream()
+                .filter(entry -> entry.getValue() == player.cellStatus())
+                .count());
     }
 }
