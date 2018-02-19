@@ -62,7 +62,6 @@ public class Othello {
             calculateValidMoves();
             if (validMoves.isEmpty()) {
                 endGame = true;
-                currentPlayer = null;
             }
         }
     }
@@ -149,18 +148,16 @@ public class Othello {
         long playerXCount = score(Player.X);
         long playerOCount = score(Player.O);
 
-        if (playerXCount > playerOCount){
+        if (playerXCount > playerOCount) {
             return Optional.of(Player.X);
-        }
-        else if (playerOCount > playerXCount){
+        } else if (playerOCount > playerXCount) {
             return Optional.of(Player.O);
-        }
-        else {
+        } else {
             return Optional.empty(); // tie is possible
         }
     }
 
-     public int score(Player player) {
+    public int score(Player player) {
         return Math.toIntExact(board.entrySet().stream()
                 .filter(entry -> entry.getValue() == player.cellStatus())
                 .count());
