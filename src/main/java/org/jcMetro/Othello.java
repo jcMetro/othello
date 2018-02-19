@@ -15,7 +15,6 @@ public class Othello {
 
     private Player currentPlayer;
     private boolean endGame;
-    private List<String> moveHistory = new ArrayList<>();
 
     public Othello() {
 
@@ -41,8 +40,6 @@ public class Othello {
     }
 
     public void placeMove(String input) {
-
-        moveHistory.add(input);
 
         Coordinate coordinate = new Coordinate(input);
         Cell currentCell = cell(coordinate);
@@ -146,10 +143,6 @@ public class Othello {
 
     public boolean isEndGame() {
         return endGame;
-    }
-
-    public List<String> getMoveHistory() {
-        return moveHistory;
     }
 
     public Optional<Player> winner() {

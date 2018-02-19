@@ -23,7 +23,8 @@ public class OthelloMain {
 
         while(!othello.isEndGame()){
             System.out.println(othello.displayBoard());
-            System.out.println("current player is: " + othello.currentPlayer());
+            System.out.println();
+            System.out.println("Current turn is Player " + othello.currentPlayer());
 
             String move = readMoveInput(othello, in);
 
@@ -46,10 +47,10 @@ public class OthelloMain {
 
     private static String readMoveInput(Othello othello, BufferedReader in) throws IOException {
         do {
-            System.out.println("Enter the move: ");
+            System.out.println("Please enter the move: ");
             String move = in.readLine();
             if (!othello.isValidMove(move)){
-                System.out.println("Invalid move input, valid moves are: " + othello.displayValidMoves());
+                System.out.println("Invalid move, valid moves: " + othello.displayValidMoves());
             }
             else{
                 return move;
