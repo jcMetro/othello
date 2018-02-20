@@ -49,7 +49,7 @@ public class OthelloTest {
     }
 
     @Test
-    public void move_sequences_should_return_correct_result() {
+    public void move_sequences() {
         placeMoves("6e", "4f", "3d", "7e");
 
         assertThat(othello.displayBoard(), is(String.join("\n",

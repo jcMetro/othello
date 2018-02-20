@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 public class CellTest {
 
     @Test
-    public void move_direction() {
+    public void move_direction_to_another_cell() {
         Cell cell = cell(3, 3);
 
         assertThat(cell.moveTo(Direction.North), is(cell(2,3)));
